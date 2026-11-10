@@ -61,7 +61,7 @@ go
 -------------------------- Crud for Instructor 
 
 -- add new instructor
-exec [MangerSC].[CreateInstructor]'Sereen Waleed', 'Sereen@example.com','demo-password','3'
+exec [MangerSC].[CreateInstructor]'Sereen Waleed', 'sereen@example.com','demo-password','3'
 
 -- edit email and Password for instructor by id
 exec[MangerSC].[EidtInstructor] 'rad@example.com','demo-password',3
@@ -87,7 +87,7 @@ go
 --CRUD for Student 
 
 -- add new student
-exec [MangerSC].[CreateStudent] 'Randa','Rand@example.com','demo-password',1,1,1,1
+exec [MangerSC].[CreateStudent] 'Randa','rand@example.com','demo-password',1,1,1,1
 
 -- delete Student by his /her ID
 exec[MangerSC].[DeleteStudent] 7
