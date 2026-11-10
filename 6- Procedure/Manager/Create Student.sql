@@ -17,19 +17,23 @@ CREATE OR ALTER PROC [MangerSC].[CreateStudent]
 AS
 BEGIN
     SET NOCOUNT ON; -- This prevents the count of the number of rows affected from being returned
+    SET XACT_ABORT ON; -- any error rolls back the whole transaction
 
     BEGIN TRY
+        BEGIN TRANSACTION;
+
         -- Perform the insertion
         INSERT INTO [dbo].[Students]
                ([Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id])
          VALUES
                (@name, @email, @password, @intakeID, @branchID, @trackID, @classID);
 
+        COMMIT TRANSACTION;
         PRINT 'Student created successfully.';
     END TRY
     BEGIN CATCH
-        -- Handle errors if any
-        PRINT 'An error occurred while creating the student. Error: ' + ERROR_MESSAGE();
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
     END CATCH
 END;
 

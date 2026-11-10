@@ -11,26 +11,30 @@ CREATE OR ALTER PROC [MangerSC].[EidtBranch]
 AS
 BEGIN
     SET NOCOUNT ON; -- This prevents the count of the number of rows affected from being returned
+    SET XACT_ABORT ON; -- any error rolls back the whole transaction
 
     BEGIN TRY
+        BEGIN TRANSACTION;
+
         -- Check if the student exists before updating
-        IF EXISTS (SELECT 1 FROM [dbo].[Branchs] WHERE Branch_ID= @id)
+        IF EXISTS (SELECT 1 FROM [dbo].[Branchs] WITH (UPDLOCK, HOLDLOCK) WHERE Branch_ID= @id)
         BEGIN
             -- Perform the update
             UPDATE [dbo].[Branchs]
 			 set  Branch_address = @address 
 			where Branch_ID = @id
 
+            COMMIT TRANSACTION;
             PRINT 'Branchs information updated successfully.';
         END
         ELSE
         BEGIN
-            PRINT 'Branchs not found. No update performed.';
+            THROW 50001, N'Branchs not found. No update performed.', 1;
         END
     END TRY
     BEGIN CATCH
-        -- Handle errors if any
-        PRINT 'An error occurred while updating the Branchs information. Error: ' + ERROR_MESSAGE();
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
     END CATCH
 END;
 GO

@@ -13,44 +13,46 @@ CREATE OR ALTER PROCEDURE [InstructorSC].[insertStudentToExams]
 AS
 BEGIN
     SET NOCOUNT ON;
+    SET XACT_ABORT ON; -- any error rolls back the whole transaction
 
-    DECLARE @StudentIDsList TABLE (ID INT);
+    BEGIN TRY
+        BEGIN TRANSACTION;
 
-    -- Split the comma-separated string of Question IDs and insert into a table variable
-    INSERT INTO @StudentIDsList (ID)
-    SELECT value
-    FROM STRING_SPLIT(@StudentIDs, ',');
+        DECLARE @StudentIDsList TABLE (ID INT);
 
-    -- Check if the number of questions provided matches the actual count
-    IF @NumberOfStudents <> (SELECT COUNT(*) FROM @StudentIDsList)
-    BEGIN
-        PRINT 'Number of questions does not match the provided count.';
-        RETURN;
-    END
+        -- Split the comma-separated string of Student IDs and insert into a table variable
+        INSERT INTO @StudentIDsList (ID)
+        SELECT value
+        FROM STRING_SPLIT(@StudentIDs, ',');
 
-    -- Check if the provided Question IDs exist in the Questions table
-    IF EXISTS (
-        SELECT 1
-        FROM @StudentIDsList Sl
-        WHERE NOT EXISTS (
+        -- Check if the number of students provided matches the actual count
+        IF @NumberOfStudents <> (SELECT COUNT(*) FROM @StudentIDsList)
+            THROW 50002, N'Number of students does not match the provided count.', 1;
+
+        -- Check if the provided Student IDs exist in the Students table
+        IF EXISTS (
             SELECT 1
-            FROM dbo.Students s
-            WHERE s.Std_ID = sl.ID
+            FROM @StudentIDsList Sl
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM dbo.Students s
+                WHERE s.Std_ID = sl.ID
+            )
         )
-    )
-    BEGIN
-        PRINT 'One or more Question IDs do not exist in the Student table.';
-        RETURN;
-    END
+            THROW 50001, N'One or more Student IDs do not exist in the Student table.', 1;
 
 
-    -- Insert data into Exam_Question table
-    INSERT INTO [dbo].[Student_Exam] ([Student_ID],[Exam_ID],[Results])
-    SELECT ID, @ExamID, '0'
-    FROM @StudentIDsList;
+        -- Insert data into Student_Exam table
+        INSERT INTO [dbo].[Student_Exam] ([Student_ID],[Exam_ID],[Results])
+        SELECT ID, @ExamID, '0'
+        FROM @StudentIDsList;
 
-    PRINT 'Data inserted into Student_Exam successfully.';
+        COMMIT TRANSACTION;
+        PRINT 'Data inserted into Student_Exam successfully.';
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
 END;
 GO
-
-

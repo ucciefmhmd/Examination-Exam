@@ -26,8 +26,7 @@ BEGIN
         END
     END TRY
     BEGIN CATCH
-        -- Handle errors if any
-        PRINT 'An error occurred while retrieving the student. Error: ' + ERROR_MESSAGE();
+        THROW;
     END CATCH
 END;
 

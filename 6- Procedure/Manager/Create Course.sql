@@ -16,19 +16,23 @@ CREATE OR ALTER PROC [MangerSC].[CreateCourses]
 AS
 BEGIN
     SET NOCOUNT ON; -- This prevents the count of the number of rows affected from being returned
+    SET XACT_ABORT ON; -- any error rolls back the whole transaction
 
     BEGIN TRY
+        BEGIN TRANSACTION;
+
         -- Perform the insertion
         INSERT INTO [dbo].[Courses]
                ([C_name], [C_minDegree] ,[C_maxDegree],  [C_Description])
          VALUES
                (@name, @min, @max, @decs);
 
+        COMMIT TRANSACTION;
         PRINT 'Courses created successfully.';
     END TRY
     BEGIN CATCH
-        -- Handle errors if any
-        PRINT 'An error occurred while creating the Courses. Error: ' + ERROR_MESSAGE();
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
     END CATCH
 END;
 GO

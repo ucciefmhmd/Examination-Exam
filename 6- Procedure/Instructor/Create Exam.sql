@@ -20,11 +20,14 @@ CREATE OR ALTER   PROCEDURE [InstructorSC].[CreateExam]
 AS
 BEGIN
     SET NOCOUNT ON; -- This prevents the count of the number of rows affected from being returned
+    SET XACT_ABORT ON; -- any error rolls back the whole transaction
 	
     BEGIN TRY
+        BEGIN TRANSACTION;
+
         IF EXISTS (
             SELECT 1
-            FROM dbo.Inst_teach_course
+            FROM dbo.Inst_teach_course WITH (UPDLOCK, HOLDLOCK)
             WHERE course_ID = @CourseID
             AND Instructor_ID = @InstructorID
         )
@@ -37,16 +40,17 @@ BEGIN
                 (@StartTime, @EndTime, @Type, @Year, @Allowance, @CourseID, @InstructorID,
                  @IntakeID, @TrackID, @BranchID , @date);
 
+            COMMIT TRANSACTION;
             PRINT 'Exam Created successfully.';
         END
         ELSE
         BEGIN
-            PRINT 'Instructor is not assigned to the specified course. Exam creation failed.';
+            THROW 50003, N'Instructor is not assigned to the specified course. Exam creation failed.', 1;
         END
     END TRY
     BEGIN CATCH
-        -- Handle errors if any
-        PRINT 'An error occurred while creating the Exam. Error: ' + ERROR_MESSAGE();
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
     END CATCH
 END;
 GO

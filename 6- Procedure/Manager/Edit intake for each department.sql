@@ -14,26 +14,30 @@ CREATE OR ALTER PROC [MangerSC].[EidtIntake_Depart]
 AS
 BEGIN
     SET NOCOUNT ON; -- This prevents the count of the number of rows affected from being returned
+    SET XACT_ABORT ON; -- any error rolls back the whole transaction
 
     BEGIN TRY
+        BEGIN TRANSACTION;
+
         -- Check if the student exists before updating
-        IF EXISTS (SELECT 1 FROM [dbo].[Intake_Depart] WHERE [Intake_id]= @id and Depart_ID = @oldDeptID)
+        IF EXISTS (SELECT 1 FROM [dbo].[Intake_Depart] WITH (UPDLOCK, HOLDLOCK) WHERE [Intake_id]= @id and Depart_ID = @oldDeptID)
         BEGIN
             -- Perform the update
             UPDATE [dbo].[Intake_Depart]
 			 set  Depart_ID = @newDeptID 
 			where [Intake_id] = @id and Depart_ID = @oldDeptID
 
+            COMMIT TRANSACTION;
             PRINT 'Intake_Depart information updated successfully.';
         END
         ELSE
         BEGIN
-            PRINT 'Intake_Depart not found. No update performed.';
+            THROW 50001, N'Intake_Depart not found. No update performed.', 1;
         END
     END TRY
     BEGIN CATCH
-        -- Handle errors if any
-        PRINT 'An error occurred while updating the Intake_Depart information. Error: ' + ERROR_MESSAGE();
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
     END CATCH
 END;
 GO

@@ -14,19 +14,23 @@ CREATE OR ALTER PROC [InstructorSC].[CreateQuestion]
 AS
 BEGIN
     SET NOCOUNT ON; -- This prevents the count of the number of rows affected from being returned
+    SET XACT_ABORT ON; -- any error rolls back the whole transaction
 
     BEGIN TRY
+        BEGIN TRANSACTION;
+
         -- Perform the insertion
         INSERT INTO [dbo].[Questions]
-               ([Q_Text],[Q_correctAns],[Q_type],[Course_ID])
+               ([Q_Text],[Q_correctAns],[Q_type],[Course_ID],[Q_Mark])
          VALUES
-               (@text,@correctAns,@type,@IdCourse );
+               (@text,@correctAns,@type,@IdCourse, 1);  -- Q_Mark is NOT NULL; start at 1 (the minimum allowed), change it with EidtQuestionsMark
 
+        COMMIT TRANSACTION;
         PRINT 'Question added successfully.';
     END TRY
     BEGIN CATCH
-        -- Handle errors if any
-        PRINT 'An error occurred while Created the Question. Error: ' + ERROR_MESSAGE();
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
     END CATCH
 END;
 GO

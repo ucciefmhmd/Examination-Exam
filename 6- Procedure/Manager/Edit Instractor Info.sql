@@ -12,26 +12,30 @@ CREATE OR ALTER PROC [MangerSC].[EidtInstructor]
 AS
 BEGIN
     SET NOCOUNT ON; -- This prevents the count of the number of rows affected from being returned
+    SET XACT_ABORT ON; -- any error rolls back the whole transaction
 
     BEGIN TRY
+        BEGIN TRANSACTION;
+
         -- Check if the student exists before updating
-        IF EXISTS (SELECT 1 FROM [Instructors] WHERE Inst_ID = @id)
+        IF EXISTS (SELECT 1 FROM [Instructors] WITH (UPDLOCK, HOLDLOCK) WHERE Inst_ID = @id)
         BEGIN
             -- Perform the update
             UPDATE [dbo].[Instructors]
  set  Inst_email = @email , Inst_password = @password
 where Inst_ID = @id
 
+            COMMIT TRANSACTION;
             PRINT 'Instructor information updated successfully.';
         END
         ELSE
         BEGIN
-            PRINT 'Instructor not found. No update performed.';
+            THROW 50001, N'Instructor not found. No update performed.', 1;
         END
     END TRY
     BEGIN CATCH
-        -- Handle errors if any
-        PRINT 'An error occurred while updating the Instructor information. Error: ' + ERROR_MESSAGE();
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
     END CATCH
 END;
 GO

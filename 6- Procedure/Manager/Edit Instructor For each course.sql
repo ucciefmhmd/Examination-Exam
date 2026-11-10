@@ -14,26 +14,30 @@ CREATE OR ALTER PROC [MangerSC].[EidtInstForEachCourse]
 AS
 BEGIN
     SET NOCOUNT ON; -- This prevents the count of the number of rows affected from being returned
+    SET XACT_ABORT ON; -- any error rolls back the whole transaction
 
     BEGIN TRY
+        BEGIN TRANSACTION;
+
         -- Check if the student exists before updating
-        IF EXISTS (SELECT 1 FROM Inst_teach_course WHERE course_ID= @oldCourseID and Class_ID = @oldClassID and  Instructor_ID = @oldInstID)
+        IF EXISTS (SELECT 1 FROM Inst_teach_course WITH (UPDLOCK, HOLDLOCK) WHERE course_ID= @oldCourseID and Class_ID = @oldClassID and  Instructor_ID = @oldInstID)
         BEGIN
             -- Perform the update
             UPDATE Inst_teach_course
 			 set  Instructor_ID = @newInstID 
 			where course_ID= @oldCourseID and Class_ID = @oldClassID and  Instructor_ID = @oldInstID
 
+            COMMIT TRANSACTION;
             PRINT 'Inst_teach_course information updated successfully.';
         END
         ELSE
         BEGIN
-            PRINT 'Inst_teach_course not found. No update performed.';
+            THROW 50001, N'Inst_teach_course not found. No update performed.', 1;
         END
     END TRY
     BEGIN CATCH
-        -- Handle errors if any
-        PRINT 'An error occurred while updating the Inst_teach_course information. Error: ' + ERROR_MESSAGE();
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
     END CATCH
 END;
 GO

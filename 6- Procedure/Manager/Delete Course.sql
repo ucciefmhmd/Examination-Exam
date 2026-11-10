@@ -10,25 +10,29 @@ CREATE OR ALTER PROC [MangerSC].[DeleteCourse]
 AS
 BEGIN
     SET NOCOUNT ON; -- This prevents the count of the number of rows affected from being returned
+    SET XACT_ABORT ON; -- any error rolls back the whole transaction
 
     BEGIN TRY
+        BEGIN TRANSACTION;
+
         -- Check if the student exists before deleting
-        IF EXISTS (SELECT 1 FROM [dbo].[Courses] WHERE C_ID = @id)
+        IF EXISTS (SELECT 1 FROM [dbo].[Courses] WITH (UPDLOCK, HOLDLOCK) WHERE C_ID = @id)
         BEGIN
             -- Perform the deletion
             DELETE FROM [dbo].[Courses]
             WHERE C_ID = @id;
 
+            COMMIT TRANSACTION;
             PRINT 'Cousre deleted successfully.';
         END
         ELSE
         BEGIN
-            PRINT 'Cousre not found. No deletion performed.';
+            THROW 50001, N'Cousre not found. No deletion performed.', 1;
         END
     END TRY
     BEGIN CATCH
-        -- Handle errors if any
-        PRINT 'An error occurred while deleting the Cousre. Error: ' + ERROR_MESSAGE();
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
     END CATCH
 END;
 GO

@@ -12,25 +12,29 @@ CREATE OR ALTER PROC [MangerSC].[DeleteStudent]
 AS
 BEGIN
     SET NOCOUNT ON; -- This prevents the count of the number of rows affected from being returned
+    SET XACT_ABORT ON; -- any error rolls back the whole transaction
 
     BEGIN TRY
+        BEGIN TRANSACTION;
+
         -- Check if the student exists before deleting
-        IF EXISTS (SELECT 1 FROM Students WHERE Std_ID = @id)
+        IF EXISTS (SELECT 1 FROM Students WITH (UPDLOCK, HOLDLOCK) WHERE Std_ID = @id)
         BEGIN
             -- Perform the deletion
             DELETE FROM Students
             WHERE Std_ID = @id;
 
+            COMMIT TRANSACTION;
             PRINT 'Student deleted successfully.';
         END
         ELSE
         BEGIN
-            PRINT 'Student not found. No deletion performed.';
+            THROW 50001, N'Student not found. No deletion performed.', 1;
         END
     END TRY
     BEGIN CATCH
-        -- Handle errors if any
-        PRINT 'An error occurred while deleting the student. Error: ' + ERROR_MESSAGE();
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
     END CATCH
 END;
 GO

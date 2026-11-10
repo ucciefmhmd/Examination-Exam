@@ -12,19 +12,23 @@ CREATE OR ALTER PROC [MangerSC].[CreateBranch]
 AS
 BEGIN
     SET NOCOUNT ON; -- This prevents the count of the number of rows affected from being returned
+    SET XACT_ABORT ON; -- any error rolls back the whole transaction
 
     BEGIN TRY
+        BEGIN TRANSACTION;
+
         -- Perform the insertion
         INSERT INTO [dbo].[Branchs]
                ([Branch_name], [Branch_address] )
          VALUES
                (@name,@address );
 
+        COMMIT TRANSACTION;
         PRINT 'Branch Created successfully.';
     END TRY
     BEGIN CATCH
-        -- Handle errors if any
-        PRINT 'An error occurred while Created the Branch. Error: ' + ERROR_MESSAGE();
+        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        THROW;
     END CATCH
 END;
 GO
