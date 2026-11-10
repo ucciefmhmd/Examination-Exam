@@ -2,7 +2,15 @@
 
 A **SQL Server** database for an online examination system covering branches, intakes, courses, instructors, students, question pools, exams and **automatic grading**. The business logic lives in the database as stored procedures, functions, triggers and views, and access is separated by role. It was built as a team project during training.
 
-<!-- TODO(Youssef): confirm which parts you built yourself before adding a "My role" section. -->
+## My role
+
+As listed in the team's own breakdown (`12- Documentation/Team Member.pdf`), I:
+
+* shared in designing the database and implementing its SQL;
+* developed the **training-manager stored procedures**: create, edit and delete for branches, courses, instructors and students, assigning instructors to courses, and intakes per department;
+* developed the **training-manager views**: `ShowAllDataFromBranch`, `ShowAllDataFromCourses`, `ShowAllDataFromInstaructors`, `ShowAllDataFromStudent`, `ShowDepartmentInIntake` and `ShowInstructorInCourseAndClass`;
+* worked on the performance of the manager-facing queries, and on testing the manager functionality;
+* shared in leading the data collection, and in creating the ERD and table mapping.
 
 ## Roles and what each can do
 
