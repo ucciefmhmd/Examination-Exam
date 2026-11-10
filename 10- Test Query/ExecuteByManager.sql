@@ -54,7 +54,8 @@ exec [MangerSC].[CreateCourses] 'new course2', '20', '78','desc for new course2'
 exec[MangerSC].[EidtCourse] '40','95','7'
 
 -- delete course by its ID
-exec [MangerSC].[DeleteCourse] 7
+-- (course 12 has no questions; course 7 cannot be deleted while question 19 belongs to it)
+exec [MangerSC].[DeleteCourse] 12
 
 go
 

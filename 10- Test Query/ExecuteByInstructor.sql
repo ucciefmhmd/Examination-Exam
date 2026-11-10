@@ -51,7 +51,10 @@ select * from[InstructorSC].[ShowStudentsInClasses]
 --   procedure for instructor     
 
 -- for make new exam with enter start time, end time, type and all details
-exec [InstructorSC].[CreateExam] '10:00:00','16:00:00','Normal','2024','true','10','6','1','1','1', '2024-01-17'
+-- (course 3 is taught by instructor 5 in the seed data; Exam_check_date only allows dates after today)
+DECLARE @ExamDate date = DATEADD(DAY, 7, CAST(GETDATE() AS date));
+DECLARE @ExamYear int = YEAR(@ExamDate);
+exec [InstructorSC].[CreateExam] '10:00:00','16:00:00','Normal',@ExamYear,'true','3','5','1','1','1', @ExamDate
  
 
  -- make a new question with select which course belongs to 
@@ -63,21 +66,24 @@ exec [InstructorSC].[DeleteQuestion] 6
 
 
 --to edit correct answer for Question with selected its id 
-exec [InstructorSC].[EditQuestions] 'd',8
+exec [InstructorSC].[EidtQuestions] 'd',8
 
 
 --to edit degree for each Question
-exec [InstructorSC].[EidtQuestionsMark] 4,12
+exec [InstructorSC].[EidtQuestionsMark] 4,11
 
 
 -- selected no oF Questions to an Exam and selected these Questions
-exec [InstructorSC].[InsertExamQuestions] _,4,'8,9,10'
+-- (exam 15 is an Html exam with no questions yet; questions 25 and 27 are Html questions)
+exec [InstructorSC].[InsertExamQuestions] 15,2,'25,27'
 
 
 -- -- selected no oF Questions to an Exam and select Questions will be random
-exec [InstructorSC].[InsertExamQuestionsRandomly] _,3
+-- (exam 25 is an Html exam with no questions yet; adds exactly 1 of the Html questions)
+exec [InstructorSC].[InsertExamQuestionsRandomly] 25,1
 
 
 -- selected Students for Specific Exam
-exec [InstructorSC].[insertStudentToExams] _,2,'2,3'
+-- (students 2 and 3 are not in exam 15 yet)
+exec [InstructorSC].[insertStudentToExams] 15,2,'2,3'
 
