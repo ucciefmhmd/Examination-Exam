@@ -1,7 +1,3 @@
-USE [Examination]
-GO
-
-
 create view [MangerSC].[ShowDepartmentInIntake]
  as
  SELECT  dbo.Intake.Intake_name, dbo.Department.dept_name

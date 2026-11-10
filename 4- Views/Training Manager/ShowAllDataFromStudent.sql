@@ -1,8 +1,3 @@
-USE [Examination]
-GO
-
-
-
 create view [MangerSC].[ShowAllDataFromStudent]
 as
 SELECT dbo.Students.Std_name, dbo.Students.Std_email, dbo.Students.Std_password, dbo.Intake.Intake_name, dbo.Branchs.Branch_name, dbo.Tracks.Track_name, dbo.Class.Class_name

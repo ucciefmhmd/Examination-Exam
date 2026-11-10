@@ -1,6 +1,3 @@
-USE [Examination]
-GO
-
 create view [InstructorSC].[ShowStudentsInClasses]
 as
 SELECT dbo.Students.Std_name, dbo.Class.Class_name

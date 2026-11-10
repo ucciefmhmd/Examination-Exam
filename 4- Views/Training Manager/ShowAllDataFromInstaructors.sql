@@ -1,7 +1,3 @@
-USE [Examination]
-GO
-
-
 create view [MangerSC].[ShowAllDataFromInstaructors]
 as
 SELECT i.Inst_name, i.Inst_ID, i.Inst_email, i.Inst_password, 

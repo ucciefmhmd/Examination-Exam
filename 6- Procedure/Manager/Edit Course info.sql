@@ -1,6 +1,3 @@
-USE [Examination]
-GO
-
 /****** Object:  StoredProcedure [MangerSC].[EidtCourse]    Script Date: 1/17/2024 12:54:23 AM ******/
 SET ANSI_NULLS ON
 GO

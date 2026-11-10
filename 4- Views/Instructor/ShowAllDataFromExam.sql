@@ -1,7 +1,3 @@
-USE [Examination]
-
-GO
-
 -- show all Data from exam
 create view [InstructorSC].[ShowAllDataFromExam]
 as

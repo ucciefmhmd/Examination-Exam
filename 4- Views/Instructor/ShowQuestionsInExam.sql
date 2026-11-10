@@ -1,8 +1,3 @@
-USE [Examination]
-
-
-GO
-
 CREATE view [InstructorSC].[ShowQuestionsInExam]
 as
 SELECT  

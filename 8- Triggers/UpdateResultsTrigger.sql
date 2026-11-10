@@ -1,6 +1,3 @@
-USE [Examination]
-GO
-
 CREATE TRIGGER [dbo].[UpdateResultsTrigger]
 ON [dbo].[Answer]
 AFTER INSERT

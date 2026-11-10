@@ -1,6 +1,3 @@
-USE [Examination]
-GO
-
 create view [MangerSC].[ShowInstructorInCourseAndClass]
 as
 SELECT dbo.Instructors.Inst_name, dbo.Courses.C_name as Course_Name, dbo.Class.Class_name, dbo.Inst_teach_course.year

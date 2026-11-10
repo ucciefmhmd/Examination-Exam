@@ -1,5 +1,3 @@
-USE [Examination]
-GO
 -- this function to show to student which exam is available now to insert Answers
 
 CREATE   FUNCTION [dbo].[GetAvailableExamsFun]()

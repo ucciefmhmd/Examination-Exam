@@ -1,6 +1,3 @@
-USE [Examination]
-GO
-
 /****** Object:  StoredProcedure [dbo].[UpdateStudentExamResults]    Script Date: 1/16/2024 11:28:31 PM ******/
 SET ANSI_NULLS ON
 GO

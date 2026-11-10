@@ -1,5 +1,3 @@
-USE [Examination]
-GO
 -- this function to check answers for student and return degree for all correct answer 
 
 CREATE   FUNCTION [dbo].[CalculateTotalCorrectAnswers](@ExamID INT, @StudentID INT)

@@ -1,6 +1,3 @@
-USE [Examination]
-GO
-
 /****** Object:  StoredProcedure [InstructorSC].[DeleteQuestion]    Script Date: 1/16/2024 11:32:14 PM ******/
 SET ANSI_NULLS ON
 GO

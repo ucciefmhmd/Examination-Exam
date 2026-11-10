@@ -1,6 +1,3 @@
-USE [Examination]
-GO
-
 /****** Object:  StoredProcedure [InstructorSC].[InsertExamQuestionsRandomly]    Script Date: 1/16/2024 11:39:24 PM ******/
 SET ANSI_NULLS ON
 GO

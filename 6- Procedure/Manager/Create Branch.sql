@@ -1,6 +1,3 @@
-USE [Examination]
-GO
-
 /****** Object:  StoredProcedure [MangerSC].[CreateBranch]    Script Date: 1/16/2024 11:59:53 PM ******/
 SET ANSI_NULLS ON
 GO
