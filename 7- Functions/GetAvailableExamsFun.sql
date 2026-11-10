@@ -1,6 +1,6 @@
 -- this function to show to student which exam is available now to insert Answers
 
-CREATE   FUNCTION [dbo].[GetAvailableExamsFun]()
+CREATE OR ALTER FUNCTION [dbo].[GetAvailableExamsFun]()
 RETURNS TABLE
 AS
 RETURN
