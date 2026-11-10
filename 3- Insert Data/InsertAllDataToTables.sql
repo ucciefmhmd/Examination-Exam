@@ -1,18 +1,31 @@
+-- Seed data for the Examination database (fictional, anonymised).
+-- Run after "2- Create Tables", connected to the Examination database.
+--
+-- Tables are filled parents first so every foreign key is satisfied, and the
+-- original IDs are kept with IDENTITY_INSERT so the cross-references line up.
+-- Exam_check_date only allows exam dates after today, so exam dates are set
+-- relative to the day the script runs (1 to 53 days ahead, keeping the
+-- spacing of the original January to March 2024 schedule).
+-- The whole seed runs in one transaction: it loads completely or not at all.
 
+IF DB_ID() <= 4  -- master, tempdb, model, msdb
+BEGIN
+    RAISERROR(N'Connected to a system database. Connect to the Examination database first. (In SSMS, run SET NOEXEC OFF afterwards.)', 16, 1);
+    SET NOEXEC ON;  -- skip the remaining batches in this session
+END
+GO
 
---  Insert data in table Answer
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
 
-INSERT [dbo].[Answer] ([Student_ID], [Exam_ID], [Question_ID], [Student_answer]) VALUES (1, 1, 1, N'a')
-INSERT [dbo].[Answer] ([Student_ID], [Exam_ID], [Question_ID], [Student_answer]) VALUES (1, 14, 31, N'd')
-INSERT [dbo].[Answer] ([Student_ID], [Exam_ID], [Question_ID], [Student_answer]) VALUES (1, 14, 32, N'false')
-INSERT [dbo].[Answer] ([Student_ID], [Exam_ID], [Question_ID], [Student_answer]) VALUES (2, 1, 2, N'c')
-INSERT [dbo].[Answer] ([Student_ID], [Exam_ID], [Question_ID], [Student_answer]) VALUES (3, 7, 5, N'true')
-INSERT [dbo].[Answer] ([Student_ID], [Exam_ID], [Question_ID], [Student_answer]) VALUES (5, 8, 10, N'c')
-
+BEGIN TRY
+BEGIN TRANSACTION;
 
 ------------------------------------------------------------------------------------------------------
 
 --  Insert data in table Branchs
+
+SET IDENTITY_INSERT [dbo].[Branchs] ON;
 
 INSERT [dbo].[Branchs] ([Branch_ID], [Branch_name], [Branch_address]) VALUES (1, N'Village bns', N'Beni suef')
 INSERT [dbo].[Branchs] ([Branch_ID], [Branch_name], [Branch_address]) VALUES (2, N'Cairo University', N'Cairo')
@@ -33,11 +46,14 @@ INSERT [dbo].[Branchs] ([Branch_ID], [Branch_name], [Branch_address]) VALUES (11
 L', N'Abu Simbel, High Dam area
 ')
 
+SET IDENTITY_INSERT [dbo].[Branchs] OFF;
 
 
 ------------------------------------------------------------------------------------------------------
 
 --  Insert data in table Class
+
+SET IDENTITY_INSERT [dbo].[Class] ON;
 
 INSERT [dbo].[Class] ([Class_ID], [Class_name]) VALUES (1, N'A1')
 INSERT [dbo].[Class] ([Class_ID], [Class_name]) VALUES (2, N'A2')
@@ -48,10 +64,14 @@ INSERT [dbo].[Class] ([Class_ID], [Class_name]) VALUES (6, N'C2')
 INSERT [dbo].[Class] ([Class_ID], [Class_name]) VALUES (7, N'D1')
 INSERT [dbo].[Class] ([Class_ID], [Class_name]) VALUES (8, N'D2')
 
+SET IDENTITY_INSERT [dbo].[Class] OFF;
+
 
 ------------------------------------------------------------------------------------------------------
 
 --  Insert data in table Courses
+
+SET IDENTITY_INSERT [dbo].[Courses] ON;
 
 INSERT [dbo].[Courses] ([C_ID], [C_name], [C_minDegree], [C_maxDegree], [C_Description]) VALUES (1, N'Html', 40, 90, N'HTML is the standard markup language for creating Web pages.')
 INSERT [dbo].[Courses] ([C_ID], [C_name], [C_minDegree], [C_maxDegree], [C_Description]) VALUES (2, N'CSS', 49, 90, N'CSS describes how HTML elements are to be displayed on screen, paper, or in other media.')
@@ -82,11 +102,14 @@ INSERT [dbo].[Courses] ([C_ID], [C_name], [C_minDegree], [C_maxDegree], [C_Descr
 INSERT [dbo].[Courses] ([C_ID], [C_name], [C_minDegree], [C_maxDegree], [C_Description]) VALUES (13, N'python', 49, 90, N'fundamental data structures and algorithms
 ')
 
+SET IDENTITY_INSERT [dbo].[Courses] OFF;
 
 
 ------------------------------------------------------------------------------------------------------
 
 --  Insert data in table Department
+
+SET IDENTITY_INSERT [dbo].[Department] ON;
 
 INSERT [dbo].[Department] ([dept_ID], [dept_name]) VALUES (1, N'CS')
 INSERT [dbo].[Department] ([dept_ID], [dept_name]) VALUES (2, N'IT')
@@ -95,91 +118,14 @@ INSERT [dbo].[Department] ([dept_ID], [dept_name]) VALUES (4, N'IS')
 INSERT [dbo].[Department] ([dept_ID], [dept_name]) VALUES (5, N'MM')
 INSERT [dbo].[Department] ([dept_ID], [dept_name]) VALUES (6, N'Marketing')
 
-
-
-------------------------------------------------------------------------------------------------------
-
---  Insert data in table Exam
-
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (1, CAST(N'11:00:00' AS Time), CAST(N'13:00:00' AS Time), N'Normal', 2020, 1, 1, 1, 1, 1, 1, CAST(N'2024-01-21' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (2, CAST(N'09:00:00' AS Time), CAST(N'11:00:00' AS Time), N'Normal', 2020, 1, 2, 1, 1, 2, 1, CAST(N'2024-01-20' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (7, CAST(N'11:00:00' AS Time), CAST(N'13:00:00' AS Time), N'Normal', 2022, 1, 5, 1, 1, 3, 1, CAST(N'2024-01-23' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (8, CAST(N'09:00:00' AS Time), CAST(N'11:00:00' AS Time), N'Corrective', 2022, 1, 6, 1, 1, 2, 1, CAST(N'2024-01-25' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (9, CAST(N'09:00:00' AS Time), CAST(N'11:00:00' AS Time), N'Corrective', 2022, 0, 9, 2, 2, 2, 2, CAST(N'2024-01-27' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (10, CAST(N'13:00:00' AS Time), CAST(N'15:00:00' AS Time), N'Corrective', 2023, 0, 7, 3, 4, 1, 1, CAST(N'2024-01-29' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (11, CAST(N'09:00:00' AS Time), CAST(N'11:00:00' AS Time), N'Corrective', 2023, 1, 11, 2, 3, 5, 1, CAST(N'2024-02-01' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (12, CAST(N'11:00:00' AS Time), CAST(N'13:00:00' AS Time), N'Normal', 2021, 1, 3, 5, 2, 1, 4, CAST(N'2024-02-03' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (14, CAST(N'12:00:00' AS Time), CAST(N'14:00:00' AS Time), N'Normal', 2025, 1, 3, 5, 2, 2, 2, CAST(N'2024-02-05' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (15, CAST(N'06:00:00' AS Time), CAST(N'08:00:00' AS Time), N'Normal', 2024, 1, 1, 5, 1, 1, 1, CAST(N'2024-02-07' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (16, CAST(N'11:00:00' AS Time), CAST(N'13:00:00' AS Time), N'Normal', 2026, 1, 1, 5, 1, 1, 1, CAST(N'2024-02-09' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (17, CAST(N'15:00:00' AS Time), CAST(N'17:00:00' AS Time), N'Normal', 2024, 1, 1, 5, 1, 1, 1, CAST(N'2024-02-15' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (18, CAST(N'15:00:00' AS Time), CAST(N'17:00:00' AS Time), N'Normal', 2024, 1, 1, 5, 1, 1, 1, CAST(N'2024-03-10' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (19, CAST(N'15:23:00' AS Time), CAST(N'17:23:00' AS Time), N'Normal', 2024, 1, 1, 5, 1, 1, 1, CAST(N'2024-03-12' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (20, CAST(N'19:57:00' AS Time), CAST(N'22:57:00' AS Time), N'Normal', 2024, 1, 5, 2, 1, 1, 1, CAST(N'2024-03-03' AS Date))
-INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (25, CAST(N'09:00:00' AS Time), CAST(N'11:00:00' AS Time), N'Normal', 2025, 0, 1, 1, 1, 1, 1, CAST(N'2024-03-05' AS Date))
-
-
-
-
-------------------------------------------------------------------------------------------------------
-
---  Insert data in table Exam_Question
-
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (1, 23)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (1, 25)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (1, 27)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (1, 29)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (2, 29)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (7, 14)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (7, 16)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (8, 18)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (9, 7)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (10, 17)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (11, 1)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (12, 31)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (14, 31)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (14, 32)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (16, 25)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (16, 27)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (17, 25)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (17, 27)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (18, 25)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (18, 27)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (19, 25)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (19, 27)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (20, 14)
-INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (20, 16)
-
-
-
-------------------------------------------------------------------------------------------------------
-
---  Insert data in table Inst_teach_course
-
-INSERT [dbo].[Inst_teach_course] ([course_ID], [Instructor_ID], [Class_ID], [year]) VALUES (1, 5, 1, 2023)
-INSERT [dbo].[Inst_teach_course] ([course_ID], [Instructor_ID], [Class_ID], [year]) VALUES (2, 3, 2, 2020)
-INSERT [dbo].[Inst_teach_course] ([course_ID], [Instructor_ID], [Class_ID], [year]) VALUES (3, 5, 1, 2021)
-INSERT [dbo].[Inst_teach_course] ([course_ID], [Instructor_ID], [Class_ID], [year]) VALUES (4, 3, 5, 2022)
-INSERT [dbo].[Inst_teach_course] ([course_ID], [Instructor_ID], [Class_ID], [year]) VALUES (5, 2, 1, 2022)
-INSERT [dbo].[Inst_teach_course] ([course_ID], [Instructor_ID], [Class_ID], [year]) VALUES (5, 3, 6, 2020)
-
-
-
-------------------------------------------------------------------------------------------------------
-
---  Insert data in table Instructors
-
-INSERT [dbo].[Instructors] ([Inst_ID], [Inst_name], [Inst_email], [Inst_password], [manager_id]) VALUES (1, N'ahmed', N'hamada@example.com', N'demo-password', 1)
-INSERT [dbo].[Instructors] ([Inst_ID], [Inst_name], [Inst_email], [Inst_password], [manager_id]) VALUES (2, N'mona', N'mona@example.com', N'demo-password', 1)
-INSERT [dbo].[Instructors] ([Inst_ID], [Inst_name], [Inst_email], [Inst_password], [manager_id]) VALUES (3, N'ali', N'ali@example.com', N'demo-password', 2)
-INSERT [dbo].[Instructors] ([Inst_ID], [Inst_name], [Inst_email], [Inst_password], [manager_id]) VALUES (5, N'hossam', N'hossam@example.com', N'demo-password', 1)
-INSERT [dbo].[Instructors] ([Inst_ID], [Inst_name], [Inst_email], [Inst_password], [manager_id]) VALUES (6, N'uccief mhmd', N'ucief@example.com', N'demo-password', 1)
-
+SET IDENTITY_INSERT [dbo].[Department] OFF;
 
 
 ------------------------------------------------------------------------------------------------------
 
 --  Insert data in table Intake
+
+SET IDENTITY_INSERT [dbo].[Intake] ON;
 
 INSERT [dbo].[Intake] ([Intake_ID], [Intake_name]) VALUES (1, N'Intake41')
 INSERT [dbo].[Intake] ([Intake_ID], [Intake_name]) VALUES (2, N'Intake42')
@@ -189,45 +135,90 @@ INSERT [dbo].[Intake] ([Intake_ID], [Intake_name]) VALUES (5, N'Intake45')
 INSERT [dbo].[Intake] ([Intake_ID], [Intake_name]) VALUES (6, N'Intake15')
 INSERT [dbo].[Intake] ([Intake_ID], [Intake_name]) VALUES (7, N'Intake12')
 
+SET IDENTITY_INSERT [dbo].[Intake] OFF;
 
 
 ------------------------------------------------------------------------------------------------------
 
---  Insert data in table Intake_Branch
+--  Insert data in table Tracks
 
-INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (1, 2)
-INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (1, 4)
-INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (1, 5)
-INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (2, 1)
-INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (2, 5)
-INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (2, 7)
-INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (3, 1)
-INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (4, 2)
-INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (4, 5)
-INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (6, 2)
-INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (7, 5)
-INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (8, 2)
-INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (8, 6)
+SET IDENTITY_INSERT [dbo].[Tracks] ON;
 
+INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (1, N'web Development', 2)
+INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (2, N'Python', 1)
+INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (3, N'ASP .Net', 3)
+INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (4, N'Mern', 5)
+INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (5, N'PHP', 4)
+INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (6, N'Testing', 3)
+INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (7, N'Data Analysis', 1)
+INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (8, N'Software Engineering Fundamentals
+', 6)
+
+SET IDENTITY_INSERT [dbo].[Tracks] OFF;
 
 
 ------------------------------------------------------------------------------------------------------
 
---  Insert data in table Intake_Depart
+--  Insert data in table Instructors
 
-INSERT [dbo].[Intake_Depart] ([Depart_ID], [Intake_id]) VALUES (1, 5)
-INSERT [dbo].[Intake_Depart] ([Depart_ID], [Intake_id]) VALUES (2, 1)
-INSERT [dbo].[Intake_Depart] ([Depart_ID], [Intake_id]) VALUES (3, 2)
-INSERT [dbo].[Intake_Depart] ([Depart_ID], [Intake_id]) VALUES (3, 3)
-INSERT [dbo].[Intake_Depart] ([Depart_ID], [Intake_id]) VALUES (4, 3)
-INSERT [dbo].[Intake_Depart] ([Depart_ID], [Intake_id]) VALUES (5, 2)
-INSERT [dbo].[Intake_Depart] ([Depart_ID], [Intake_id]) VALUES (5, 4)
+SET IDENTITY_INSERT [dbo].[Instructors] ON;
 
+INSERT [dbo].[Instructors] ([Inst_ID], [Inst_name], [Inst_email], [Inst_password], [manager_id]) VALUES (1, N'ahmed', N'hamada@example.com', N'demo-password', 1)
+INSERT [dbo].[Instructors] ([Inst_ID], [Inst_name], [Inst_email], [Inst_password], [manager_id]) VALUES (2, N'mona', N'mona@example.com', N'demo-password', 1)
+INSERT [dbo].[Instructors] ([Inst_ID], [Inst_name], [Inst_email], [Inst_password], [manager_id]) VALUES (3, N'ali', N'ali@example.com', N'demo-password', 2)
+INSERT [dbo].[Instructors] ([Inst_ID], [Inst_name], [Inst_email], [Inst_password], [manager_id]) VALUES (5, N'hossam', N'hossam@example.com', N'demo-password', 1)
+INSERT [dbo].[Instructors] ([Inst_ID], [Inst_name], [Inst_email], [Inst_password], [manager_id]) VALUES (6, N'uccief mhmd', N'ucief@example.com', N'demo-password', 1)
+
+SET IDENTITY_INSERT [dbo].[Instructors] OFF;
+
+
+------------------------------------------------------------------------------------------------------
+
+--  Insert data in table Students
+
+SET IDENTITY_INSERT [dbo].[Students] ON;
+
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (1, N'youssef mohamed', N'youssef@example.com', N'demo-password', 1, 2, 2, 1)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (2, N'sama ahmed', N'sama@example.com', N'demo-password', 2, 1, 2, 1)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (3, N'rofida ashraf', N'rofida@example.com', N'demo-password', 3, 3, 1, 1)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (4, N'sameh osama', N'sameh@example.com', N'demo-password', 2, 2, 3, 3)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (5, N'shrouk ali', N'shrouk@example.com', N'demo-password', 2, 1, 1, 4)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (6, N'Sara ahmed', N'sara@example.com', N'demo-password', 7, 5, 6, 4)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (7, N'Mostafa Waled
+', N'mostafa@example.com', N'demo-password', 1, 8, 4, 7)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (8, N'Karim Essam
+', N'karim@example.com', N'demo-password', 3, 6, 8, 5)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (9, N'Waled Khalid
+', N'waled@example.com', N'demo-password', 2, 5, 4, 4)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (10, N'Saly Tarek
+', N'saly@example.com', N'demo-password', 5, 5, 5, 5)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (11, N'Nada Ahmed
+', N'nada@example.com', N'demo-password', 6, 5, 4, 3)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (12, N'Marwa Helmy
+', N'marwa@example.com', N'demo-password', 2, 5, 5, 4)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (13, N'Mai Bahaa
+', N'mai@example.com', N'demo-password', 3, 3, 1, 1)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (14, N'Bassem Serag
+', N'basem@example.com', N'demo-password', 7, 8, 7, 7)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (15, N'Manal Ali
+', N'manal@example.com', N'demo-password', 6, 6, 2, 1)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (16, N'Menna Omar
+', N'menna@example.com', N'demo-password', 5, 8, 1, 2)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (17, N'Abdelrahman Dyaa
+', N'abdo@example.com', N'demo-password', 4, 6, 7, 1)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (20, N'yasser ali', N'yasserr@example.com', N'demo-password', 5, 6, 3, 1)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (21, N'Engy Mohamed
+', N'engy@example.com', N'demo-password', 4, 6, 2, 4)
+INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (24, N'ali ahmed', N'alii@example.com', N'demo-password', 1, 1, 2, 1)
+
+SET IDENTITY_INSERT [dbo].[Students] OFF;
 
 
 ------------------------------------------------------------------------------------------------------
 
 --  Insert data in table Questions
+
+SET IDENTITY_INSERT [dbo].[Questions] ON;
 
 INSERT [dbo].[Questions] ([Q_ID], [Q_Text], [Q_correctAns], [Q_type], [Course_ID], [Q_Mark]) VALUES (1, N'"What does OOP stand for?
 a. Object-Oriented Programming
@@ -296,8 +287,107 @@ INSERT [dbo].[Questions] ([Q_ID], [Q_Text], [Q_correctAns], [Q_type], [Course_ID
 	c) SUM()
 	d) COUNT(*)', N'd', N'MCQ', 4, 1)
 
+SET IDENTITY_INSERT [dbo].[Questions] OFF;
 
 
+------------------------------------------------------------------------------------------------------
+
+--  Insert data in table Exam
+
+SET IDENTITY_INSERT [dbo].[Exam] ON;
+
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (1, CAST(N'11:00:00' AS Time), CAST(N'13:00:00' AS Time), N'Normal', 2020, 1, 1, 1, 1, 1, 1, DATEADD(DAY, 2, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (2, CAST(N'09:00:00' AS Time), CAST(N'11:00:00' AS Time), N'Normal', 2020, 1, 2, 1, 1, 2, 1, DATEADD(DAY, 1, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (7, CAST(N'11:00:00' AS Time), CAST(N'13:00:00' AS Time), N'Normal', 2022, 1, 5, 1, 1, 3, 1, DATEADD(DAY, 4, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (8, CAST(N'09:00:00' AS Time), CAST(N'11:00:00' AS Time), N'Corrective', 2022, 1, 6, 1, 1, 2, 1, DATEADD(DAY, 6, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (9, CAST(N'09:00:00' AS Time), CAST(N'11:00:00' AS Time), N'Corrective', 2022, 0, 9, 2, 2, 2, 2, DATEADD(DAY, 8, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (10, CAST(N'13:00:00' AS Time), CAST(N'15:00:00' AS Time), N'Corrective', 2023, 0, 7, 3, 4, 1, 1, DATEADD(DAY, 10, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (11, CAST(N'09:00:00' AS Time), CAST(N'11:00:00' AS Time), N'Corrective', 2023, 1, 11, 2, 3, 5, 1, DATEADD(DAY, 13, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (12, CAST(N'11:00:00' AS Time), CAST(N'13:00:00' AS Time), N'Normal', 2021, 1, 3, 5, 2, 1, 4, DATEADD(DAY, 15, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (14, CAST(N'12:00:00' AS Time), CAST(N'14:00:00' AS Time), N'Normal', 2025, 1, 3, 5, 2, 2, 2, DATEADD(DAY, 17, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (15, CAST(N'06:00:00' AS Time), CAST(N'08:00:00' AS Time), N'Normal', 2024, 1, 1, 5, 1, 1, 1, DATEADD(DAY, 19, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (16, CAST(N'11:00:00' AS Time), CAST(N'13:00:00' AS Time), N'Normal', 2026, 1, 1, 5, 1, 1, 1, DATEADD(DAY, 21, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (17, CAST(N'15:00:00' AS Time), CAST(N'17:00:00' AS Time), N'Normal', 2024, 1, 1, 5, 1, 1, 1, DATEADD(DAY, 27, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (18, CAST(N'15:00:00' AS Time), CAST(N'17:00:00' AS Time), N'Normal', 2024, 1, 1, 5, 1, 1, 1, DATEADD(DAY, 51, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (19, CAST(N'15:23:00' AS Time), CAST(N'17:23:00' AS Time), N'Normal', 2024, 1, 1, 5, 1, 1, 1, DATEADD(DAY, 53, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (20, CAST(N'19:57:00' AS Time), CAST(N'22:57:00' AS Time), N'Normal', 2024, 1, 5, 2, 1, 1, 1, DATEADD(DAY, 44, CAST(GETDATE() AS date)))
+INSERT [dbo].[Exam] ([E_ID], [E_startTime], [E_endTime], [E_type], [E_year], [E_allownce], [Course_ID], [Instructor_ID], [Intake_ID], [Track_ID], [Branch_ID], [E_Date]) VALUES (25, CAST(N'09:00:00' AS Time), CAST(N'11:00:00' AS Time), N'Normal', 2025, 0, 1, 1, 1, 1, 1, DATEADD(DAY, 46, CAST(GETDATE() AS date)))
+
+SET IDENTITY_INSERT [dbo].[Exam] OFF;
+
+
+------------------------------------------------------------------------------------------------------
+
+--  Insert data in table Exam_Question
+
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (1, 23)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (1, 25)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (1, 27)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (1, 29)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (2, 29)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (7, 14)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (7, 16)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (8, 18)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (9, 7)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (10, 17)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (11, 1)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (12, 31)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (14, 31)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (14, 32)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (16, 25)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (16, 27)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (17, 25)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (17, 27)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (18, 25)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (18, 27)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (19, 25)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (19, 27)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (20, 14)
+INSERT [dbo].[Exam_Question] ([Exam_ID], [Question_ID]) VALUES (20, 16)
+
+
+------------------------------------------------------------------------------------------------------
+
+--  Insert data in table Inst_teach_course
+
+INSERT [dbo].[Inst_teach_course] ([course_ID], [Instructor_ID], [Class_ID], [year]) VALUES (1, 5, 1, 2023)
+INSERT [dbo].[Inst_teach_course] ([course_ID], [Instructor_ID], [Class_ID], [year]) VALUES (2, 3, 2, 2020)
+INSERT [dbo].[Inst_teach_course] ([course_ID], [Instructor_ID], [Class_ID], [year]) VALUES (3, 5, 1, 2021)
+INSERT [dbo].[Inst_teach_course] ([course_ID], [Instructor_ID], [Class_ID], [year]) VALUES (4, 3, 5, 2022)
+INSERT [dbo].[Inst_teach_course] ([course_ID], [Instructor_ID], [Class_ID], [year]) VALUES (5, 2, 1, 2022)
+INSERT [dbo].[Inst_teach_course] ([course_ID], [Instructor_ID], [Class_ID], [year]) VALUES (5, 3, 6, 2020)
+
+
+------------------------------------------------------------------------------------------------------
+
+--  Insert data in table Intake_Branch
+
+INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (1, 2)
+INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (1, 4)
+INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (1, 5)
+INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (2, 1)
+INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (2, 5)
+INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (2, 7)
+INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (3, 1)
+INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (4, 2)
+INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (4, 5)
+INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (6, 2)
+INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (7, 5)
+INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (8, 2)
+INSERT [dbo].[Intake_Branch] ([bran_ID], [intak_ID]) VALUES (8, 6)
+
+
+------------------------------------------------------------------------------------------------------
+
+--  Insert data in table Intake_Depart
+
+INSERT [dbo].[Intake_Depart] ([Depart_ID], [Intake_id]) VALUES (1, 5)
+INSERT [dbo].[Intake_Depart] ([Depart_ID], [Intake_id]) VALUES (2, 1)
+INSERT [dbo].[Intake_Depart] ([Depart_ID], [Intake_id]) VALUES (3, 2)
+INSERT [dbo].[Intake_Depart] ([Depart_ID], [Intake_id]) VALUES (3, 3)
+INSERT [dbo].[Intake_Depart] ([Depart_ID], [Intake_id]) VALUES (4, 3)
+INSERT [dbo].[Intake_Depart] ([Depart_ID], [Intake_id]) VALUES (5, 2)
+INSERT [dbo].[Intake_Depart] ([Depart_ID], [Intake_id]) VALUES (5, 4)
 
 
 ------------------------------------------------------------------------------------------------------
@@ -316,56 +406,23 @@ INSERT [dbo].[Student_Exam] ([Student_ID], [Exam_ID], [Results]) VALUES (10, 7, 
 INSERT [dbo].[Student_Exam] ([Student_ID], [Exam_ID], [Results]) VALUES (15, 8, N'60')
 
 
-
 ------------------------------------------------------------------------------------------------------
 
---  Insert data in table Students
+--  Insert data in table Answer
 
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (1, N'youssef mohamed', N'youssef@example.com', N'demo-password', 1, 2, 2, 1)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (2, N'sama ahmed', N'sama@example.com', N'demo-password', 2, 1, 2, 1)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (3, N'rofida ashraf', N'rofida@example.com', N'demo-password', 3, 3, 1, 1)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (4, N'sameh osama', N'sameh@example.com', N'demo-password', 2, 2, 3, 3)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (5, N'shrouk ali', N'shrouk@example.com', N'demo-password', 2, 1, 1, 4)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (6, N'Sara ahmed', N'sara@example.com', N'demo-password', 7, 5, 6, 4)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (7, N'Mostafa Waled
-', N'mostafa@example.com', N'demo-password', 1, 8, 4, 7)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (8, N'Karim Essam
-', N'karim@example.com', N'demo-password', 3, 6, 8, 5)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (9, N'Waled Khalid
-', N'waled@example.com', N'demo-password', 2, 5, 4, 4)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (10, N'Saly Tarek
-', N'saly@example.com', N'demo-password', 5, 5, 5, 5)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (11, N'Nada Ahmed
-', N'nada@example.com', N'demo-password', 6, 5, 4, 3)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (12, N'Marwa Helmy
-', N'marwa@example.com', N'demo-password', 2, 5, 5, 4)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (13, N'Mai Bahaa
-', N'mai@example.com', N'demo-password', 3, 3, 1, 1)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (14, N'Bassem Serag
-', N'basem@example.com', N'demo-password', 7, 8, 7, 7)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (15, N'Manal Ali
-', N'manal@example.com', N'demo-password', 6, 6, 2, 1)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (16, N'Menna Omar
-', N'menna@example.com', N'demo-password', 5, 8, 1, 2)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (17, N'Abdelrahman Dyaa
-', N'abdo@example.com', N'demo-password', 4, 6, 7, 1)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (20, N'yasser ali', N'yasserr@example.com', N'demo-password', 5, 6, 3, 1)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (21, N'Engy Mohamed
-', N'engy@example.com', N'demo-password', 4, 6, 2, 4)
-INSERT [dbo].[Students] ([Std_ID], [Std_name], [Std_email], [Std_password], [Intake_id], [barch_id], [track_id], [class_id]) VALUES (24, N'ali ahmed', N'alii@example.com', N'demo-password', 1, 1, 2, 1)
+INSERT [dbo].[Answer] ([Student_ID], [Exam_ID], [Question_ID], [Student_answer]) VALUES (1, 1, 1, N'a')
+INSERT [dbo].[Answer] ([Student_ID], [Exam_ID], [Question_ID], [Student_answer]) VALUES (1, 14, 31, N'd')
+INSERT [dbo].[Answer] ([Student_ID], [Exam_ID], [Question_ID], [Student_answer]) VALUES (1, 14, 32, N'false')
+INSERT [dbo].[Answer] ([Student_ID], [Exam_ID], [Question_ID], [Student_answer]) VALUES (2, 1, 2, N'c')
+INSERT [dbo].[Answer] ([Student_ID], [Exam_ID], [Question_ID], [Student_answer]) VALUES (3, 7, 5, N'true')
+INSERT [dbo].[Answer] ([Student_ID], [Exam_ID], [Question_ID], [Student_answer]) VALUES (5, 8, 10, N'c')
 
 
-
-------------------------------------------------------------------------------------------------------
-
---  Insert data in table Tracks
-
-INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (1, N'web Development', 2)
-INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (2, N'Python', 1)
-INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (3, N'ASP .Net', 3)
-INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (4, N'Mern', 5)
-INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (5, N'PHP', 4)
-INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (6, N'Testing', 3)
-INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (7, N'Data Analysis', 1)
-INSERT [dbo].[Tracks] ([Track_ID], [Track_name], [Department_ID]) VALUES (8, N'Software Engineering Fundamentals
-', 6)
+COMMIT TRANSACTION;
+PRINT N'Seed data inserted.';
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+GO
