@@ -20,7 +20,7 @@ BEGIN
     BEGIN TRY
         -- Perform the insertion
         INSERT INTO [dbo].[Courses]
-               ([C_name], [C_minDegree] ,[C_maxDigree],  [C_Description])
+               ([C_name], [C_minDegree] ,[C_maxDegree],  [C_Description])
          VALUES
                (@name, @min, @max, @decs);
 

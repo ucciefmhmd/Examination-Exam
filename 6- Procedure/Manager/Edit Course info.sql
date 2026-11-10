@@ -20,7 +20,7 @@ BEGIN
         BEGIN
             -- Perform the update
             UPDATE Courses
- set  C_minDegree = @min , C_maxDigree = @max
+ set  C_minDegree = @min , C_maxDegree = @max
 where C_ID = @id
 
             PRINT 'Course information updated successfully.';
