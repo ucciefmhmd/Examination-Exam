@@ -1,9 +1,12 @@
+-- Run in SQLCMD mode and supply the passwords, for example:
+--   sqlcmd -S . -i Accounts.sql -v ManagerPassword="..." InstructorPassword="..." StudentPassword="..."
+-- (In SSMS: Query > SQLCMD Mode, then add  :setvar ManagerPassword "..."  lines at the top.)
 
 
 --Training Manager Account--
 
 CREATE LOGIN manager
-WITH PASSWORD = '$(LoginPassword)' ,
+WITH PASSWORD = '$(ManagerPassword)' ,
 DEFAULT_DATABASE = [Examination]
 GO
 
@@ -16,7 +19,7 @@ GO
 -----------------------------------------------------------
 --  Instructor Account  --
 CREATE LOGIN instructor
-WITH PASSWORD = '$(LoginPassword)' ,
+WITH PASSWORD = '$(InstructorPassword)' ,
 DEFAULT_DATABASE = [Examination]
 GO
 
@@ -29,7 +32,7 @@ GO
 --------------------------------------------------------------
 --  Student Account  --
 CREATE LOGIN student
-WITH PASSWORD = '$(LoginPassword)' ,
+WITH PASSWORD = '$(StudentPassword)' ,
 DEFAULT_DATABASE = [Examination]
 GO
 
