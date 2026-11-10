@@ -1,3 +1,11 @@
+-- Run after "9- Accounts", connected to the Examination database.
+IF DB_ID() <= 4  -- master, tempdb, model, msdb
+BEGIN
+    RAISERROR(N'Connected to a system database. Connect to the Examination database first. (In SSMS, run SET NOEXEC OFF afterwards.)', 16, 1);
+    SET NOEXEC ON;  -- skip the remaining batches in this session
+END
+GO
+
 -- Manager Role --
 
 CREATE ROLE Manager_role;
@@ -21,6 +29,7 @@ GRANT exec ON [MangerSC].[CreateInstructorINCourse] TO Manager_role;
 GRANT exec ON [MangerSC].[CreateStudent] TO Manager_role;
 GRANT exec ON [MangerSC].[DeleteCourse] TO Manager_role;
 GRANT exec ON [MangerSC].[DeleteInstructor] TO Manager_role;
+GRANT exec ON [MangerSC].[DeleteStudent] TO Manager_role;
 GRANT exec ON [MangerSC].[EditStudent] TO Manager_role;
 GRANT exec ON [MangerSC].[EidtBranch] TO Manager_role;
 GRANT exec ON [MangerSC].[EidtCourse] TO Manager_role;
@@ -63,7 +72,7 @@ GRANT select ON [InstructorSC].[ShowStudentsInClasses] TO Instructor_role;
 GRANT exec ON [InstructorSC].[CreateExam] TO Instructor_role;
 GRANT exec ON [InstructorSC].[CreateQuestion] TO Instructor_role;
 GRANT exec ON [InstructorSC].[DeleteQuestion] TO Instructor_role;
-GRANT exec ON [InstructorSC].[EditQuestions] TO Instructor_role;
+GRANT exec ON [InstructorSC].[EidtQuestions] TO Instructor_role;
 GRANT exec ON [InstructorSC].[EidtQuestionsMark] TO Instructor_role;
 GRANT exec ON [InstructorSC].[GetStudentByID] TO Instructor_role;
 GRANT exec ON [InstructorSC].[InsertExamQuestions] TO Instructor_role;
