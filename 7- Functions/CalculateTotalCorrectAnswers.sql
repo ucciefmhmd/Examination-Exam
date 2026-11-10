@@ -1,12 +1,13 @@
--- this function to check answers for student and return degree for all correct answer 
+-- this function to check answers for student and return degree for all correct answer
+-- Returns 0 (not NULL) when the student has no correct answers, or no answers at all.
 
-CREATE   FUNCTION [dbo].[CalculateTotalCorrectAnswers](@ExamID INT, @StudentID INT)
+CREATE OR ALTER FUNCTION [dbo].[CalculateTotalCorrectAnswers](@ExamID INT, @StudentID INT)
 RETURNS INT
 AS
 BEGIN
     DECLARE @TotalCorrectAnswers INT;
 
-    SELECT @TotalCorrectAnswers = sum(q.Q_Mark)
+    SELECT @TotalCorrectAnswers = ISNULL(SUM(q.Q_Mark), 0)
     FROM dbo.Answer a
     INNER JOIN dbo.Questions q ON a.Question_ID = q.Q_ID
     WHERE a.Exam_ID = @ExamID
