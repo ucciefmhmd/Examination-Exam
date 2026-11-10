@@ -1,3 +1,19 @@
+-- Run this script connected to the database created by "1- Create Database"
+-- (sqlcmd -d Examination, or pick Examination in the SSMS database list).
+IF DB_ID() <= 4  -- master, tempdb, model, msdb
+BEGIN
+    RAISERROR(N'Connected to a system database. Connect to the Examination database first. (In SSMS, run SET NOEXEC OFF afterwards.)', 16, 1);
+    SET NOEXEC ON;  -- skip the remaining batches in this session
+END
+GO
+
+------------- Create Schemas -------------------------------------
+-- The views and procedures live in these three schemas.
+IF SCHEMA_ID(N'InstructorSC') IS NULL EXEC (N'CREATE SCHEMA [InstructorSC] AUTHORIZATION [dbo]');
+IF SCHEMA_ID(N'MangerSC') IS NULL EXEC (N'CREATE SCHEMA [MangerSC] AUTHORIZATION [dbo]');
+IF SCHEMA_ID(N'StudentSC') IS NULL EXEC (N'CREATE SCHEMA [StudentSC] AUTHORIZATION [dbo]');
+GO
+
 ------------- Create Table Answer -------------------------------------
 CREATE TABLE [dbo].[Answer](
 	[Student_ID] [int] NOT NULL,
@@ -13,6 +29,7 @@ CREATE TABLE [dbo].[Answer](
 ) 
 
 
+GO
 
 ------------- Create Table Branchs -------------------------------------
 CREATE TABLE [dbo].[Branchs](
@@ -26,6 +43,7 @@ CREATE TABLE [dbo].[Branchs](
 ) 
 
 
+GO
 
 ------------- Create Table Class -------------------------------------
 CREATE TABLE [dbo].[Class](
@@ -38,6 +56,7 @@ CREATE TABLE [dbo].[Class](
 ) 
 
 
+GO
 
 ------------- Create Table Courses -------------------------------------
 CREATE TABLE [dbo].[Courses](
@@ -53,6 +72,7 @@ CREATE TABLE [dbo].[Courses](
 ) 
 
 
+GO
 
 ------------- Create Table Deparments -------------------------------------
 CREATE TABLE [dbo].[Department](
@@ -65,6 +85,7 @@ CREATE TABLE [dbo].[Department](
 )
 
 
+GO
 
 ------------- Create Table Exam -------------------------------------
 CREATE TABLE [dbo].[Exam](
@@ -87,6 +108,7 @@ CREATE TABLE [dbo].[Exam](
 ) 
 
 
+GO
 
 ------------- Create Table Exam_Question -------------------------------------
 CREATE TABLE [dbo].[Exam_Question](
@@ -100,6 +122,7 @@ CREATE TABLE [dbo].[Exam_Question](
 )
 
 
+GO
 
 ------------- Create Table Inst_teach_course -------------------------------------
 CREATE TABLE [dbo].[Inst_teach_course](
@@ -116,6 +139,7 @@ CREATE TABLE [dbo].[Inst_teach_course](
 ) 
 
 
+GO
 
 ------------- Create Table Instructors -------------------------------------
 CREATE TABLE [dbo].[Instructors](
@@ -136,6 +160,7 @@ CREATE TABLE [dbo].[Instructors](
 
 
 
+GO
 
 ------------- Create Table Intake -------------------------------------
 CREATE TABLE [dbo].[Intake](
@@ -149,6 +174,7 @@ CREATE TABLE [dbo].[Intake](
 
 
 
+GO
 
 ------------- Create Table Intake_Branch -------------------------------------
 CREATE TABLE [dbo].[Intake_Branch](
@@ -162,6 +188,7 @@ CREATE TABLE [dbo].[Intake_Branch](
 ) 
 
 
+GO
 
 ------------- Create Table Intake_Depart -------------------------------------
 CREATE TABLE [dbo].[Intake_Depart](
@@ -176,6 +203,7 @@ CREATE TABLE [dbo].[Intake_Depart](
 
 
 
+GO
 
 ------------- Create Table Questions -------------------------------------
 CREATE TABLE [dbo].[Questions](
@@ -193,6 +221,7 @@ CREATE TABLE [dbo].[Questions](
 
 
 
+GO
 
 ------------- Create Table Student_Exam -------------------------------------
 CREATE TABLE [dbo].[Student_Exam](
@@ -208,6 +237,7 @@ CREATE TABLE [dbo].[Student_Exam](
 
 
 
+GO
 
 ------------- Create Table Students -------------------------------------
 CREATE TABLE [dbo].[Students](
@@ -231,6 +261,7 @@ CREATE TABLE [dbo].[Students](
 
 
 
+GO
 
 ------------- Create Table Tracks -------------------------------------
 CREATE TABLE [dbo].[Tracks](
@@ -240,10 +271,12 @@ CREATE TABLE [dbo].[Tracks](
  CONSTRAINT [PK_Tracks] PRIMARY KEY CLUSTERED 
 (
 	[Track_ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) 
 
 
 
+GO
 
 -------------------------------- Constraints ---------------------------------------------------
 
@@ -429,4 +462,4 @@ ALTER TABLE [dbo].[Questions] CHECK CONSTRAINT [Question_check_Type]
 ALTER TABLE [dbo].[Questions]  WITH CHECK ADD  CONSTRAINT [Questions_Defult_Mark] CHECK  (([Q_Mark]>=(1)))
 
 ALTER TABLE [dbo].[Questions] CHECK CONSTRAINT [Questions_Defult_Mark]
-
+GO
