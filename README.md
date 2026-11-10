@@ -36,7 +36,7 @@ As listed in the team's own breakdown (`12- Documentation/Team Member.pdf`), I:
 | `6- Procedure`, `7- Functions`, `8- Triggers` | Business logic, grouped by role |
 | `9- Accounts`, `Roles.sql` | Logins and users; database roles and their permissions |
 | `10- Test Query` | Test queries per role, and `VerifyFixes.sql` |
-| `12- Documentation` | ERD, table mapping and script documentation |
+| `12- Documentation` | ERD, table mapping, the project requirements sheet and the team breakdown |
 
 ## ERD
 
